@@ -1,0 +1,11 @@
+:root {
+  --main-yellow: #FFB915;
+  --main-green: #3FE13C;
+}
+
+.container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}

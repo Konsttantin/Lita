@@ -1,0 +1,16 @@
+@font-face {
+  font-family: "SF Pro Display";
+  src: url(./SFPRODISPLAYREGULAR.woff2);
+}
+
+@font-face {
+  font-family: "SF Pro Rounded";
+  src: url(./SF-Pro-Rounded-Regular.woff2);
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "SF Pro Rounded";
+  src: url(./SF-Pro-Rounded-Bold.woff2);
+  font-weight: bold;
+}

@@ -5,13 +5,13 @@ const Navigation = () => {
   return (
     <ul className={cl.navigation}>
       <li className={cn(cl.item, { [cl.active]: false })}>
-        <img src="public/svg/menu.svg" alt="Menu" />
+        <img src="svg/menu.SVG" alt="Menu" />
       </li>
       <li className={cn(cl.item, { [cl.active]: false })}>
-        <img src="public/svg/home.svg" alt="Home" />
+        <img src="svg/home.SVG" alt="Home" />
       </li>
       <li className={cn(cl.item, { [cl.active]: true })}>
-        <img src="public/svg/calendar.svg" alt="Calendar" />
+        <img src="svg/calendar.SVG" alt="Calendar" />
       </li>
     </ul>
   );

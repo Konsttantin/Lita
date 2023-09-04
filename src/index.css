@@ -11,6 +11,13 @@
 	box-sizing: border-box;
 }
 
+*:focus {
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+}
+
 /* Links */
 
 a, a:link, a:visited  {
@@ -91,7 +98,5 @@ legend {
 /* Styles */
 
 body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
+  height: calc(var(--vh, 1vh) * 100);
 }

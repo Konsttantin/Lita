@@ -25,7 +25,7 @@ const Survey = () => {
           }}
         >
           <img
-            src="public/svg/back-arrow.svg"
+            src="svg/back-arrow.SVG"
             alt="Back"
           />
         </button>
@@ -42,10 +42,10 @@ const Survey = () => {
               onClick={() => setQuestionIndex(0)}
             >
               {showFinish ? (
-                <img src="public/svg/lita-text-logo.svg"/>
+                <img src="svg/lita-text-logo.SVG"/>
               ) : (
                 <>
-                  <img src="public/svg/lita.svg" alt="Logo" />
+                  <img src="svg/lita.SVG" alt="Logo" />
                   <span>Визначити ризики</span>
                 </>
               )}

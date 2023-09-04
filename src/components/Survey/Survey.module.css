@@ -28,7 +28,7 @@
   align-items: center;
   gap: 50px;
 
-  margin-top: 20vh;
+  margin-top: calc(var(--vh, 1vh) * 40 - 150px);
 }
 
 .header {

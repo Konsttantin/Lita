@@ -11,11 +11,13 @@
 	box-sizing: border-box;
 }
 
-*:focus {
+input,
+textarea,
+button,
+select,
+a,
+label {
   -webkit-tap-highlight-color: transparent;
-  outline: none;
-  -ms-touch-action: manipulation;
-  touch-action: manipulation;
 }
 
 /* Links */

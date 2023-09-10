@@ -54,6 +54,8 @@ const Survey = () => {
         ) : (
           <Question
             header={currentQuestion.title}
+            type={currentQuestion.type}
+            answers={currentQuestion.answers}
           />
         )}
       </div>

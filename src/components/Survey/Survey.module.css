@@ -8,7 +8,7 @@
   position: relative;
 
   width: 100vw;
-  padding-bottom: 40px;
+  padding: 0 30px 40px;
 
   font-family: "SF Pro Display";
 
@@ -27,6 +27,8 @@
   justify-content: flex-start;
   align-items: center;
   gap: 50px;
+
+  width: 100%;
 
   margin-top: calc(var(--vh, 1vh) * 40 - 150px);
 }

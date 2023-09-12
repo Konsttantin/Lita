@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import cn from 'classnames';
 import Picker from 'react-mobile-picker';
 import cl from './Answers.module.css';
 
@@ -39,7 +40,7 @@ const Answers = ({ type, answers }) => {
             </label>
           ))}
         </ul>
-      )
+      );
     }
 
     case 'count': {
@@ -49,13 +50,33 @@ const Answers = ({ type, answers }) => {
           answers={answers}
           startValue={unitStartValues[answers.unit] || 2}
         />
-      )
+      );
     }
 
     case 'date': {
       return (
         <DatePicker />
-      )
+      );
+    }
+
+    case 'input': {
+      return (
+        <>
+          {answers.options.map(({ title, unit }) => (
+            <CustomInput
+              key={title}
+              title={title}
+              unit={unit}
+            />
+          ))}
+        </>
+      );
+    }
+
+    case 'check': {
+      return (
+        <Checkboxes answers={answers} />
+      );
     }
   }
 };
@@ -91,7 +112,7 @@ const NumberPicker = ({ type, answers: { unit }, startValue }) => {
     </div>
   </Picker>
   )
-}
+};
 
 const DatePicker = () => {
   const [value, setValue] = useState({
@@ -149,7 +170,7 @@ const DatePicker = () => {
     if (result.day > getDaysInMonth(result.month + 1, result.year)) {
       result = {...result, day: getDaysInMonth(result.month + 1, result.year)};
     }
-    console.log(result);
+
     setValue(result);
   }, [])
 
@@ -187,8 +208,93 @@ const DatePicker = () => {
     <div className={cl.mask} />
   </Picker>
   )
-}
+};
 
+const CustomInput = ({ title, unit }) => {
+  const [value, setValue] = useState('');
+  const [isUnknown, setIsUnknown] = useState(false);
 
+  const inputHandler = (e) => {
+    setIsUnknown(false);
+    setValue(e.target.value);
+  };
+
+  const clearHandler = () => {
+    setIsUnknown(true);
+    setValue('');
+  };
+
+  return (
+    <>
+      <div className={cl.inputContainer}>
+        <span className={cl.inputTitle}>{title}</span>
+        <input
+          type="number"
+          placeholder='ввести'
+          className={cl.input}
+          value={value}
+          onChange={inputHandler}
+          name={title}
+        />
+        <span className={cl.unit}>
+          {unit}
+        </span>
+        <div className={cl.clearIndicator}>
+          <div className={cn(cl.marker, { [cl.hidden]: !isUnknown })}></div>
+        </div>
+      </div>
+      <button
+        className={cl.clearButton}
+        onClick={clearHandler}
+      >
+        я не знаю
+      </button>
+    </>
+  );
+};
+
+const Checkboxes = ({ answers }) => {
+  const [values, setValues] = useState(Object.fromEntries(
+    [...answers.options].map(el => [el, false])
+  ));
+
+  const checkboxHandler = useCallback((e) => {
+    if (e.target.value === 'нічого з перерахованого') {
+      return setValues(current => ({
+        ...values,
+        [e.target.value]: !current[e.target.value]
+      }));
+    }
+
+    setValues(current => ({
+      ...current,
+      [e.target.value]: !current[e.target.value],
+      'нічого з перерахованого': false
+    }));
+  }, [])
+
+  return (
+    <ul className={cl.checkList}>
+      {answers.options.map(el => (
+        <label
+          key={el}
+          htmlFor={el}
+          className={cl.checkItem}
+        >
+          <input
+            type="checkbox"
+            value={el}
+            id={el}
+            className={cl.checkInput}
+            checked={values[el]}
+            onChange={checkboxHandler}
+          />
+          <span className={cl.checkmark}></span>
+          {el}
+        </label>
+      ))}
+    </ul>
+  );
+};
 
 export default Answers;

@@ -11,12 +11,7 @@
 	box-sizing: border-box;
 }
 
-input,
-textarea,
-button,
-select,
-a,
-label {
+* {
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -101,14 +96,6 @@ legend {
 
 body {
   height: calc(var(--vh, 1vh) * 100);
-}
-
-html, body {
-  overscroll-behavior: none;
-}
-
-html, body {
-  overscroll-behavior: none;
 }
 
 html, body {

@@ -4,6 +4,8 @@
   display: flex;
   flex-direction: column;
   gap: 30px;
+
+  margin-top: calc(var(--vh, vh) * 30 - 100px);
 }
 
 .radioItem {
@@ -66,6 +68,8 @@
 .picker {
   width: 100%;
 
+  margin-top: calc(var(--vh, vh) * 30 - 100px);
+
   -webkit-mask-image: none !important;
 
   font-size: 24px;
@@ -106,4 +110,151 @@
   }
 }
 
+/* Custom input */
 
+.inputContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+
+  position: relative;
+
+  width: 100%;
+  margin-top: 20px;
+
+  font-size: 14px;
+
+  &:first-of-type {
+    margin-top: calc(var(--vh, vh) * 15 - 80px);
+  }
+}
+
+.inputTitle {
+  width: 0;
+  max-width: 100px;
+  flex-grow: 1;
+  text-align: center;
+}
+
+.input {
+  padding: 12px 0;
+  text-align: center;
+  max-width: 100px;
+  flex-grow: 1;
+  border-bottom: 1px solid #000;
+
+  font-weight: 500;
+
+  &::placeholder {
+  color: rgba(0, 0, 0, 0.09);
+  }
+}
+
+.unit {
+  text-align: center;
+  width: 0;
+  max-width: 100px;
+  flex-grow: 1;
+}
+
+.clearIndicator {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  right: 50px;
+  top: calc(100% + 15px);
+  transform: translateX(50%);
+
+  width: 17px;
+  height: 17px;
+
+  border: 1px solid #000;
+
+  .marker {
+    width: 9px;
+    height: 9px;
+
+    background-color: var(--main-yellow);
+
+    &.hidden {
+      display: none;
+    }
+  }
+}
+
+.clearButton {
+  padding: 4px 30px;
+  margin-top: 10px;
+  border-radius: 20px;
+
+  background-color: #D9D9D9;
+}
+
+/* Checkbox */
+
+.checkList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  margin-top: calc(var(--vh, vh) * 15 - 80px);
+}
+
+.checkItem {
+  display: flex;
+  align-items: center;
+
+  position: relative;
+  height: 35px;
+  padding-left: 45px;
+
+  cursor: pointer;
+
+  font-size: 20px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  .checkInput {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+
+  .checkmark {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+
+    height: 17px;
+    width: 17px;
+    
+    border: 1px solid #000;
+  }
+
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+
+  input:checked ~ .checkmark:after {
+    display: block;
+  }
+
+  .checkmark:after {
+    width: 9px;
+    height: 9px;
+    background: var(--main-yellow);
+  }
+}

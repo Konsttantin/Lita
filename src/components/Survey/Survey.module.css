@@ -8,7 +8,8 @@
   position: relative;
 
   width: 100vw;
-  padding: 0 30px 40px;
+  min-height: 0;
+  padding: 0 30px 20px;
 
   font-family: "SF Pro Display";
 
@@ -16,7 +17,7 @@
 
   @media (max-width: 374px) {
     & {
-      padding: 0 5px 40px;
+      padding: 0 15px 20px;
     };
   };
 }
@@ -35,8 +36,9 @@
   gap: 50px;
 
   width: 100%;
+  min-height: 0;
 
-  margin-top: calc(var(--vh, 1vh) * 30 - 110px);
+  margin-top: calc(var(--vh, 1vh) * 30 - 120px);
 }
 
 .header {
@@ -170,5 +172,9 @@
 
   &.active {
     background-color: #49E346;
+  }
+
+  img {
+    width: 22px;
   }
 }

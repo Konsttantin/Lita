@@ -33,7 +33,7 @@ const Answers = ({ type, answers }) => {
     case 'radio': {
       return (
         <ul className={cl.radioList}>
-          {answers.options.map(el => (
+          {!!answers.options && answers.options.map(el => (
             <label key={el.value} htmlFor={el.value} className={cl.radioItem}>
               <input type="radio" name={type} id={el.value} value={el.value}/>
               <span className={cl.checkmark}></span>

@@ -13,10 +13,8 @@ const Question = ({ header, type, answers, tooltip }) => {
     tip.current.style.transform = 'none';
 
     const tipOffset = window.screen.width - tip.current.getBoundingClientRect().right;
-    console.log(tipOffset);
 
     if (tipOffset < 0) {
-      console.log('yes');
       tip.current.style.transform = `translateX(${tipOffset - 7}px)`;
     }
 
@@ -30,7 +28,11 @@ const Question = ({ header, type, answers, tooltip }) => {
         <span className={cl.lastWord}>
           {header.split(' ').slice(-1).join('')}
 
-          <button onClick={() => setShowTip(!showTip)} className={cl.tipButton}>
+          <button
+            onClick={() => setShowTip(!showTip)}
+            onBlur={() => setShowTip(false)}
+            className={cl.tipButton}
+          >
             <img src="svg/tip-button.SVG" alt="tip" />
 
             {showTip && (

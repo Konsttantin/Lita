@@ -12,6 +12,12 @@
   text-align: center;
   max-width: 260px;
 
+  font-family: "SF Pro Rounded";
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+
   .lastWord {
     display: inline-flex;
     align-items: center;
@@ -64,10 +70,4 @@
   }
 
   /* margin-bottom: calc(var(--vh, vh) * 30 - 100px); */
-
-  font-family: "SF Pro Rounded";
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: normal;
 }

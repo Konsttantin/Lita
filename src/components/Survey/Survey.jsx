@@ -2,90 +2,204 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import cn from 'classnames';
 import Question from '../Question/Question';
 import cl from './Survey.module.css';
+import CategoryPicker from '../CategoryPicker/CategoryPicker';
 
 const questionTypes = {
   radio: 'radio',
   dropdown: 'radio',
-  integer: 'count'
+  integer: 'count',
+  checkbox: 'check',
+  date: 'date'
 };
 
 const Survey = () => {
   const [questionIndex, setQuestionIndex] = useState(null);
   const [showFinish, setShowFinish] = useState(false);
+  const [isTestStarted, setIsTestStarted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [quesions, setQuestions] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [currentAnswer, setCurrentAnswer] = useState({
+    patient_test_id: null,
+    test_question_id: null,
+    test_answer_id: [],
+    test_answer_text: ''
+  });
+
+  const isAnswerEmpty = useMemo(() => !currentAnswer.test_answer_id.length && !currentAnswer.test_answer_text, [currentAnswer]);
 
   useEffect(() => {
-    async function fetchTestQuestions() {
-      try {
-        const response = await fetch('https://api-lita.ingello.com/v1/test-question/index?-join=testQuestionInput');
+    (async() => {
+      const categories = await fetch('https://api-lita.ingello.com/v1/test-category/index').then(resp => resp.json());
 
-        if (!response.ok) {
-          throw new Error('Ошибка при получении вопросов');
+      setCategories(categories);
+      setSelectedCategory(categories[0].id);
+      setIsLoading(false);
+    })()
+  }, []); // load test categories
+
+  const fetchTestQuestions = useCallback(async function fetchTestQuestions(category) {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`https://api-lita.ingello.com/v1/test-question/index?test_category_id=${category}&sort=order&-join=testQuestionInput`);
+
+      if (!response.ok) {
+        throw new Error('Ошибка при получении вопросов');
+      }
+
+      const questions = await response.json();
+
+      const questionPromises = questions.map(async (q) => {
+        const result = {
+          id: q.id,
+          title: q.title,
+          type: questionTypes[q['testQuestionInput[name]']],
+          tooltip: q.description,
+        };
+        const answerResponse = await fetch(`https://api-lita.ingello.com/v1/test-answer/index?test_question_id=${q.id}`);
+
+        if (!answerResponse.ok) {
+          throw new Error('Ошибка при получении ответов');
         }
 
-        const questions = await response.json();
+        const answers = await answerResponse.json();
 
-        const questionPromises = questions.map(async (q) => {
-          const result = {
-            id: q.id,
-            title: q.title,
-            type: questionTypes[q['testQuestionInput[name]']],
-            tooltip: q.description,
-          };
-          const answerResponse = await fetch(`https://api-lita.ingello.com/v1/test-answer/index?test_question_id=${q.id}`);
+        result.answers = {
+          options: answers?.map(answer => ({
+            id: answer.id,
+            title: answer.title,
+            value: answer.value,
+          })),
+          unit: q.units,
+        };
 
-          if (!answerResponse.ok) {
-            throw new Error('Ошибка при получении ответов');
-          }
+        return result;
+      });
 
-          const answers = await answerResponse.json();
+      const results = await Promise.all(questionPromises);
 
-          result.answers = {
-            options: answers?.map(answer => ({
-              title: answer.title,
-              value: answer.value,
-            })),
-            unit: q.units,
-          };
-
-          return result;
-        });
-
-        const results = await Promise.all(questionPromises);
-
-        setQuestions(results);
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Произошла ошибка:', error);
-      }
+      setQuestions(results);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Произошла ошибка:', error);
     }
-
-    fetchTestQuestions()
-  }, [])
+  }, []);
 
   const currentQuestion = useMemo(() => quesions[questionIndex], [questionIndex, quesions]);
+
+  useEffect(() => {
+    setCurrentAnswer(answer => ({ ...answer, test_question_id: currentQuestion?.id || null }))
+  }, [currentQuestion]); // update question_id in currentAnswer
+
+  const createPatientTest = useCallback(async() => {
+    const test = await fetch('https://api-lita.ingello.com/v1/patient-test/create', {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({patient_id: localStorage.getItem('userID')})
+    }).then(resp => resp.json());
+
+    setCurrentAnswer(answer => ({ ...answer, patient_test_id: test.id }));
+  }, []); // create test session
+
+  const sendTestAnswer = useCallback(async() => {
+    setIsLoading(true);
+    const existingAnswer = await fetch(`https://api-lita.ingello.com/v1/patient-test-answer/index?patient_test_id=${currentAnswer.patient_test_id}&test_question_id=${currentAnswer.test_question_id}`).then(resp => resp.json());
+
+    if (!existingAnswer) {
+      if (currentAnswer.test_answer_id.length) {
+        currentAnswer.test_answer_id.forEach(id => {
+          fetch('https://api-lita.ingello.com/v1/patient-test-answer/create', {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ...currentAnswer,
+              test_answer_id: +id
+            })
+          })
+        })
+      } else {
+        fetch('https://api-lita.ingello.com/v1/patient-test-answer/create', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            ...currentAnswer,
+            test_answer_id: null,
+          })
+        })
+      }
+
+      console.log('sended', existingAnswer);
+    }
+    setIsLoading(false);
+  }, [currentAnswer]);
+
   const skipButtonHandler = useCallback(() => {
+    if (isLoading) {
+      return;
+    }
+
+    if (isTestStarted && questionIndex === null) {
+      createPatientTest();
+      return setQuestionIndex(0);
+    }
+
     if (questionIndex === quesions.length - 1) {
+      setCurrentAnswer(answer => ({
+        ...answer,
+        test_answer_id: [],
+        test_answer_text: ''
+      }));
+
       return setShowFinish(true)
     }
 
     if (questionIndex !== null) {
-      return setQuestionIndex(i => i + 1);
+      if (isAnswerEmpty) {
+        return;
+      }
+
+      sendTestAnswer();
+
+      setCurrentAnswer(answer => ({
+        ...answer,
+        test_answer_id: [],
+        test_answer_text: ''
+      }));
+
+      return questionIndex === quesions.length - 1
+        ? setShowFinish(true)
+        : setQuestionIndex(i => i + 1);
     }
 
     return setShowFinish(true);
-  }, [questionIndex, quesions]);
-
+  }, [questionIndex, quesions, isLoading, isTestStarted, createPatientTest, isAnswerEmpty]);
+  console.log(isTestStarted && !showFinish && currentQuestion === null);
   return (
     <div className={cl.survey}>
-      {(showFinish || questionIndex !== null) && (
+      {(showFinish || isTestStarted) && (
         <button
           className={cl.backArrow}
           onClick={() => {
             if (showFinish) {
               return setShowFinish(false);
             }
+
+            if (questionIndex === null) {
+              return setIsTestStarted(false);
+            }
+
+            setCurrentAnswer(answer => ({
+              ...answer,
+              test_answer_id: [],
+              test_answer_text: ''
+            }));
 
             return setQuestionIndex(i => i - 1 >= 0 ? i - 1 : null);
           }}
@@ -98,14 +212,20 @@ const Survey = () => {
       )}
 
       <div className={cl.wrapper}>
-        {questionIndex === null || showFinish ? (
+        {!isTestStarted || showFinish ? (
           <>
             <h1 className={cn(cl.header, { [cl.finished]: showFinish })}>
               {showFinish ? "Ми дізналися про вас трішки, а тепер хочемо познайомити вас з нашим функціоналом та можливостями." : "Розпочнемо з простого опитувальника"}
             </h1>
             <button
               className={cn(cl.startButton, { [cl.finished]: showFinish })}
-              onClick={() => setQuestionIndex(0)}
+              onClick={() => {
+                if (showFinish || isLoading) {
+                  return;
+                }
+
+                setIsTestStarted(true);
+              }}
             >
               {showFinish ? (
                 <img src="svg/lita-text-logo.SVG"/>
@@ -118,32 +238,42 @@ const Survey = () => {
             </button>
           </>
         ) : (
-          <Question
-            header={currentQuestion.title}
-            type={currentQuestion.type}
-            answers={currentQuestion.answers}
-            tooltip={currentQuestion.tooltip}
-          />
+          <>
+            {questionIndex === null ? (
+              <CategoryPicker
+                categories={categories}
+                selectedCategory={selectedCategory}
+                onCategoryChange={(value) => setSelectedCategory(value)}
+                fetchQuestions={fetchTestQuestions}
+              />
+            ) : (
+              <Question
+                header={currentQuestion.title}
+                type={currentQuestion.type}
+                answers={currentQuestion.answers}
+                tooltip={currentQuestion.tooltip}
+                setAnswer={setCurrentAnswer}
+              />
+            )}
+          </>
         )}
       </div>
 
-      {isLoading ? (
-        <button
-          className={cl.skipButton}
-        >
+      <button
+        className={cn(
+          cl.skipButton,
+          { [cl.active]: (isTestStarted && !showFinish && questionIndex === null) || (isTestStarted && questionIndex !== null && (currentAnswer.test_answer_id.length || currentAnswer.test_answer_text)) },
+        )}
+        onClick={skipButtonHandler}
+      >
+        {isLoading ? (
           <img src="loader.png" alt="loader" />
-        </button>
-      ) : (
-        <button
-          className={cn(
-            cl.skipButton,
-            { [cl.active]: questionIndex !== null && !showFinish },
-          )}
-          onClick={skipButtonHandler}
-        >
-          {(questionIndex === null || showFinish) ? 'пропустити' : 'продовжити'}
-        </button>
-      )}
+        ) : (
+          <>
+            {(!isTestStarted || showFinish) ? 'пропустити' : 'продовжити'}
+          </>
+        )}
+      </button>
     </div>
   );
 };

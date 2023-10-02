@@ -1,0 +1,46 @@
+.picker {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
+  min-height: 0;
+  width: 100%;
+}
+
+.header {
+  text-align: center;
+  max-width: 260px;
+
+  font-family: "SF Pro Rounded";
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.categories {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 12px;
+
+  padding: 15px 0;
+
+  width: 100%;
+}
+
+.item {
+  padding: 11px 15px;
+  font-size: 18px;
+
+  border-radius: 12px;
+  background-color: #F6F6F6;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+  border: 2px solid transparent;
+  transition: all .2s ease;
+
+  &.picked {
+    border: 2px solid rgba(0, 0, 0, 0.3);
+  }
+}

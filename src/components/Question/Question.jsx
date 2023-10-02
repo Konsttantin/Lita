@@ -4,7 +4,7 @@ import cn from 'classnames';
 import cl from './Question.module.css';
 import Answers from './Answers/Answers';
 
-const Question = ({ header, type, answers, tooltip }) => {
+const Question = ({ header, type, answers, tooltip, setAnswer }) => {
   const [showTip, setShowTip] = useState(false);
 
   const tip = useRef(null);
@@ -17,7 +17,6 @@ const Question = ({ header, type, answers, tooltip }) => {
     if (tipOffset < 0) {
       tip.current.style.transform = `translateX(${tipOffset - 7}px)`;
     }
-
   }, [header]);
 
   return (
@@ -29,7 +28,10 @@ const Question = ({ header, type, answers, tooltip }) => {
           {header.split(' ').slice(-1).join('')}
 
           <button
-            onClick={() => setShowTip(!showTip)}
+            onClick={() => {
+              setShowTip(!showTip);
+              tip.current.focus();
+            }}
             onBlur={() => setShowTip(false)}
             className={cl.tipButton}
           >
@@ -53,6 +55,7 @@ const Question = ({ header, type, answers, tooltip }) => {
       <Answers
         type={type}
         answers={answers}
+        setAnswer={setAnswer}
       />
     </div>
   );

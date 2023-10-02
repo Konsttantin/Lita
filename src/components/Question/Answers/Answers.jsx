@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import cn from 'classnames';
 import Picker from 'react-mobile-picker';
 import cl from './Answers.module.css';
@@ -9,8 +9,6 @@ const unitStartValues = {
 };
 
 const getMonth = () => {
-  // const month = ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень", "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"];
-
   return new Date().getMonth();
 };
 
@@ -26,21 +24,16 @@ const getDaysInMonth = (month, year) => {
   return new Date(year, month, 0).getDate();
 };
 
-const Answers = ({ type, answers }) => {
+const Answers = ({ type, answers, setAnswer }) => {
   // const [answer, setAnswer] = useState(null);
 
   switch (type) {
     case 'radio': {
       return (
-        <ul className={cl.radioList}>
-          {!!answers.options && answers.options.map(el => (
-            <label key={el.value} htmlFor={el.value} className={cl.radioItem}>
-              <input type="radio" name={type} id={el.value} value={el.value}/>
-              <span className={cl.checkmark}></span>
-              {el.title}
-            </label>
-          ))}
-        </ul>
+        <RadioButtons
+          answers={answers}
+          setAnswer={setAnswer}
+        />
       );
     }
 
@@ -50,13 +43,16 @@ const Answers = ({ type, answers }) => {
           type={type}
           answers={answers}
           startValue={unitStartValues[answers.unit] || 2}
+          setAnswer={setAnswer}
         />
       );
     }
 
     case 'date': {
       return (
-        <DatePicker />
+        <DatePicker
+          setAnswer={setAnswer}
+        />
       );
     }
 
@@ -75,17 +71,26 @@ const Answers = ({ type, answers }) => {
     }
 
     case 'check': {
-      return (
-        <Checkboxes answers={answers} />
-      );
+      if (answers.options) {
+        return (
+          <Checkboxes
+            answers={answers}
+            setAnswer={setAnswer}
+          />
+        );
+      }
     }
   }
 };
 
-const NumberPicker = ({ type, answers: { unit }, startValue }) => {
+const NumberPicker = ({ type, answers, startValue, setAnswer }) => {
   const [value, setValue] = useState({ [type]: startValue });
 
-  useEffect(() => setValue({ [type]: startValue }), [startValue, type]);
+  useEffect(() => setValue({ [type]: startValue }), [startValue, type, answers]);
+
+  useEffect(() => {
+    setAnswer(answer => ({ ...answer, test_answer_text: value.count }))
+  }, [value])
 
   const range = [];
 
@@ -109,18 +114,24 @@ const NumberPicker = ({ type, answers: { unit }, startValue }) => {
       ))}
     </Picker.Column>
     <div className={cl.mask}>
-      {unit && <span className={cl.unit}>{unit}</span>}
+      {answers.unit && <span className={cl.unit}>{answers.unit}</span>}
     </div>
   </Picker>
   )
 };
 
-const DatePicker = () => {
+const DatePicker = ({ setAnswer }) => {
   const [value, setValue] = useState({
     month: getMonth(),
     day: getDay(),
     year: getYear()
   });
+
+  useEffect(() => {
+    setAnswer(answer => ({
+      ...answer,
+      test_answer_text: `${value.day}.${value.month}.${value.year}`}));
+  }, [value])
 
   const years = useMemo(() => {
     const result = [];
@@ -254,13 +265,31 @@ const CustomInput = ({ title, unit }) => {
   );
 };
 
-const Checkboxes = ({ answers }) => {
+const Checkboxes = ({ answers, setAnswer }) => {
   const [values, setValues] = useState(Object.fromEntries(
-    [...answers.options].map(el => [el, false])
+    [...answers.options].map(el => [el.id, false])
   ));
 
-  const checkboxHandler = useCallback((e) => {
-    if (e.target.value === 'нічого з перерахованого') {
+  const list = useRef(null);
+
+  useEffect(() => {
+    list.current.scrollTo(0, 0);
+  }, [answers])
+
+  useEffect(() => {
+    const resultArr = [];
+
+    for (const key in values) {
+      if (values[key]) {
+        resultArr.push(key)
+      }
+    }
+
+    setAnswer(answer => ({ ...answer, test_answer_id: resultArr }));
+  }, [values])
+
+  const checkboxHandler = useCallback((e, index, arr) => {
+    if (index === 0) {
       return setValues(current => ({
         ...values,
         [e.target.value]: !current[e.target.value]
@@ -270,32 +299,64 @@ const Checkboxes = ({ answers }) => {
     setValues(current => ({
       ...current,
       [e.target.value]: !current[e.target.value],
-      'нічого з перерахованого': false
+      [arr[0].id]: false
     }));
   }, [])
 
   return (
-    <ul className={cl.checkList}>
-      {answers.options.map(el => (
+    <ul className={cl.checkList} ref={list}>
+      {answers.options.map((el, index, answersArr) => (
         <label
-          key={el}
-          htmlFor={el}
+          key={el.value}
+          htmlFor={el.value}
           className={cl.checkItem}
         >
           <input
             type="checkbox"
-            value={el}
-            id={el}
+            value={el.id}
+            id={el.value}
             className={cl.checkInput}
-            checked={values[el]}
-            onChange={checkboxHandler}
+            checked={values[el.id]}
+            onChange={(e) => checkboxHandler(e, index, answersArr)}
           />
           <span className={cl.checkmark}></span>
-          {el}
+          {el.title}
         </label>
       ))}
     </ul>
   );
 };
+
+const RadioButtons = ({ answers, setAnswer }) => {
+  const [selectedValue, setSelectedValue] = useState(null);
+
+  const list = useRef(null);
+
+  useEffect(() => {
+    list.current.scrollTo(0, 0);
+  }, [answers])
+
+  useEffect(() => {
+    if (selectedValue) {
+      setAnswer(answer => ({ ...answer, test_answer_id: [selectedValue] }))
+    }
+  }, [selectedValue])
+
+  return (
+    <ul
+      className={cl.radioList}
+      onChange={(e) => setSelectedValue(e.target.value)}
+      ref={list}
+    >
+      {!!answers.options && answers.options.map(el => (
+        <label key={el.value} htmlFor={el.id} className={cl.radioItem}>
+          <input type="radio" name="radio" id={el.id} value={el.id}/>
+          <span className={cl.checkmark}></span>
+          {el.title}
+        </label>
+      ))}
+    </ul>
+  );
+}
 
 export default Answers;

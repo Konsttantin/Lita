@@ -143,9 +143,19 @@ const Survey = () => {
 
             setQuestions(current => {
               const newQuestions = [...current];
-              
+
               if (optionalIDs.includes(questions[questionIndex + 1].id)) {
-                newQuestions.splice(questionIndex + 1, 1, nextQuestion);
+                let optionalCount = 0;
+
+                for (let i = questionIndex + 1; i < questions.length; i++) {
+                  if (optionalIDs.includes(questions[i].id)) {
+                    optionalCount++;
+                  } else {
+                    break;
+                  }
+                }
+
+                newQuestions.splice(questionIndex + 1, optionalCount, nextQuestion);
               } else {
                 newQuestions.splice(questionIndex + 1, 0, nextQuestion);
               }

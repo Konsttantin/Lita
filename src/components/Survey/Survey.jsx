@@ -17,7 +17,9 @@ const Survey = () => {
   const [showFinish, setShowFinish] = useState(false);
   const [isTestStarted, setIsTestStarted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [quesions, setQuestions] = useState([]);
+  const [questions, setQuestions] = useState([]);
+  const [optionalQuestions, setOptionalQuestions] = useState([]);
+  const [requires, setRequires] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [currentAnswer, setCurrentAnswer] = useState({
@@ -32,15 +34,21 @@ const Survey = () => {
   useEffect(() => {
     (async() => {
       const categories = await fetch('https://api-lita.ingello.com/v1/test-category/index').then(resp => resp.json());
+      const requires = await fetch('https://api-lita.ingello.com/v1/test-question-requires/index').then(response => response.json());
 
       setCategories(categories);
+      setRequires(requires);
       setSelectedCategory(categories[0].id);
       setIsLoading(false);
     })()
-  }, []); // load test categories
+  }, []); // load test categories and requires
 
-  const fetchTestQuestions = useCallback(async function fetchTestQuestions(category) {
+  const optionalIDs = useMemo(() => requires.map(req => req.test_question_id), [requires]);
+  const requiresAnswers = useMemo(() => requires.map(req => req.test_answer_id), [requires])
+
+  const setTestQuestions = useCallback(async function (category) {
     setIsLoading(true);
+
     try {
       const response = await fetch(`https://api-lita.ingello.com/v1/test-question/index?test_category_id=${category}&sort=order&-join=testQuestionInput`);
 
@@ -77,16 +85,20 @@ const Survey = () => {
         return result;
       });
 
-      const results = await Promise.all(questionPromises);
+      let results = await Promise.all(questionPromises);
+
+      setOptionalQuestions(results.filter(res => optionalIDs.includes(res.id)));
+      results = results.filter(res => !optionalIDs.includes(res.id));
 
       setQuestions(results);
       setIsLoading(false);
     } catch (error) {
       console.error('Произошла ошибка:', error);
     }
-  }, []);
+  }, [optionalIDs]);
 
-  const currentQuestion = useMemo(() => quesions[questionIndex], [questionIndex, quesions]);
+  const currentQuestion = useMemo(() => questions[questionIndex], [questionIndex, questions]);
+  console.log(currentQuestion, questionIndex, questions);
 
   useEffect(() => {
     setCurrentAnswer(answer => ({ ...answer, test_question_id: currentQuestion?.id || null }))
@@ -121,6 +133,26 @@ const Survey = () => {
               test_answer_id: +id
             })
           })
+
+          if (requiresAnswers.includes(+id)) {
+            const nextQuestion = optionalQuestions.find(question => {
+              const questionId = requires.find(req => req.test_answer_id === +id).test_question_id;
+
+              return question.id === questionId;
+            })
+
+            setQuestions(current => {
+              const newQuestions = [...current];
+              
+              if (optionalIDs.includes(questions[questionIndex + 1].id)) {
+                newQuestions.splice(questionIndex + 1, 1, nextQuestion);
+              } else {
+                newQuestions.splice(questionIndex + 1, 0, nextQuestion);
+              }
+
+              return newQuestions;
+            });
+          }
         })
       } else {
         fetch('https://api-lita.ingello.com/v1/patient-test-answer/create', {
@@ -138,9 +170,9 @@ const Survey = () => {
       console.log('sended', existingAnswer);
     }
     setIsLoading(false);
-  }, [currentAnswer]);
+  }, [currentAnswer, requiresAnswers, optionalQuestions, requires, questionIndex, questions, optionalIDs]);
 
-  const skipButtonHandler = useCallback(() => {
+  const skipButtonHandler = useCallback(async () => {
     if (isLoading) {
       return;
     }
@@ -150,7 +182,7 @@ const Survey = () => {
       return setQuestionIndex(0);
     }
 
-    if (questionIndex === quesions.length - 1) {
+    if (questionIndex === questions.length - 1) {
       setCurrentAnswer(answer => ({
         ...answer,
         test_answer_id: [],
@@ -165,7 +197,7 @@ const Survey = () => {
         return;
       }
 
-      sendTestAnswer();
+      await sendTestAnswer();
 
       setCurrentAnswer(answer => ({
         ...answer,
@@ -173,14 +205,14 @@ const Survey = () => {
         test_answer_text: ''
       }));
 
-      return questionIndex === quesions.length - 1
+      return questionIndex === questions.length - 1
         ? setShowFinish(true)
         : setQuestionIndex(i => i + 1);
     }
 
     return setShowFinish(true);
-  }, [questionIndex, quesions, isLoading, isTestStarted, createPatientTest, isAnswerEmpty]);
-  console.log(isTestStarted && !showFinish && currentQuestion === null);
+  }, [questionIndex, questions, isLoading, isTestStarted, createPatientTest, isAnswerEmpty, sendTestAnswer]);
+
   return (
     <div className={cl.survey}>
       {(showFinish || isTestStarted) && (
@@ -244,7 +276,7 @@ const Survey = () => {
                 categories={categories}
                 selectedCategory={selectedCategory}
                 onCategoryChange={(value) => setSelectedCategory(value)}
-                fetchQuestions={fetchTestQuestions}
+                fetchQuestions={setTestQuestions}
               />
             ) : (
               <Question

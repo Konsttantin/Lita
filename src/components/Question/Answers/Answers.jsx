@@ -9,7 +9,7 @@ const unitStartValues = {
 };
 
 const getMonth = () => {
-  return new Date().getMonth();
+  return new Date().getMonth() + 1;
 };
 
 const getDay = () => {
@@ -147,7 +147,7 @@ const DatePicker = ({ setAnswer }) => {
     const allMonths = ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень", "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"];
 
     if (value.year === getYear()) {
-      return allMonths.slice(0, getMonth() + 1);
+      return allMonths.slice(0, getMonth());
     }
 
     return allMonths;
@@ -196,7 +196,7 @@ const DatePicker = ({ setAnswer }) => {
   >
     <Picker.Column name={'month'} className={cl.column}>
       {months.map((el, i) => (
-        <Picker.Item value={i} key={el}>
+        <Picker.Item value={i + 1} key={el}>
           {el}
         </Picker.Item>
       ))}

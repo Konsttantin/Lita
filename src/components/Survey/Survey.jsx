@@ -98,7 +98,6 @@ const Survey = () => {
   }, [optionalIDs]);
 
   const currentQuestion = useMemo(() => questions[questionIndex], [questionIndex, questions]);
-  console.log(currentQuestion, questionIndex, questions);
 
   useEffect(() => {
     setCurrentAnswer(answer => ({ ...answer, test_question_id: currentQuestion?.id || null }))
@@ -176,8 +175,6 @@ const Survey = () => {
           })
         })
       }
-
-      console.log('sended', existingAnswer);
     }
     setIsLoading(false);
   }, [currentAnswer, requiresAnswers, optionalQuestions, requires, questionIndex, questions, optionalIDs]);

@@ -3,6 +3,7 @@ import cn from 'classnames';
 import Question from '../Question/Question';
 import cl from './Survey.module.css';
 import CategoryPicker from '../CategoryPicker/CategoryPicker';
+import { post } from '../../utils/api';
 
 const questionTypes = {
   radio: 'radio',
@@ -51,30 +52,29 @@ const Survey = () => {
 
     try {
       const response = await fetch(`https://api-lita.ingello.com/v1/test-question/index?test_category_id=${category}&sort=order&-join=testQuestionInput`);
+      const answerResponse = await fetch(`https://api-lita.ingello.com/v1/test-answer/index`);
 
       if (!response.ok) {
         throw new Error('Ошибка при получении вопросов');
       }
 
-      const questions = await response.json();
+      if (!answerResponse.ok) {
+        throw new Error('Ошибка при получении ответов');
+      }
 
-      const questionPromises = questions.map(async (q) => {
+      const questions = await response.json();
+      const answers = await answerResponse.json();
+
+      let results = questions.map(q => {
         const result = {
           id: q.id,
           title: q.title,
           type: questionTypes[q['testQuestionInput[name]']],
           tooltip: q.description,
         };
-        const answerResponse = await fetch(`https://api-lita.ingello.com/v1/test-answer/index?test_question_id=${q.id}`);
-
-        if (!answerResponse.ok) {
-          throw new Error('Ошибка при получении ответов');
-        }
-
-        const answers = await answerResponse.json();
 
         result.answers = {
-          options: answers?.map(answer => ({
+          options: answers?.filter(ans => ans.test_question_id === q.id).map(answer => ({
             id: answer.id,
             title: answer.title,
             value: answer.value,
@@ -84,8 +84,6 @@ const Survey = () => {
 
         return result;
       });
-
-      let results = await Promise.all(questionPromises);
 
       setOptionalQuestions(results.filter(res => optionalIDs.includes(res.id)));
       results = results.filter(res => !optionalIDs.includes(res.id));
@@ -104,13 +102,7 @@ const Survey = () => {
   }, [currentQuestion]); // update question_id in currentAnswer
 
   const createPatientTest = useCallback(async() => {
-    const test = await fetch('https://api-lita.ingello.com/v1/patient-test/create', {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({patient_id: localStorage.getItem('userID')})
-    }).then(resp => resp.json());
+    const test = await post('patient-test/create', {patient_id: localStorage.getItem('userID')});
 
     setCurrentAnswer(answer => ({ ...answer, patient_test_id: test.id }));
   }, []); // create test session
@@ -122,16 +114,10 @@ const Survey = () => {
     if (!existingAnswer) {
       if (currentAnswer.test_answer_id.length) {
         currentAnswer.test_answer_id.forEach(id => {
-          fetch('https://api-lita.ingello.com/v1/patient-test-answer/create', {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              ...currentAnswer,
-              test_answer_id: +id
-            })
-          })
+          post('patient-test-answer/create', {
+            ...currentAnswer,
+            test_answer_id: +id
+          });
 
           if (requiresAnswers.includes(+id)) {
             const nextQuestion = optionalQuestions.find(question => {
@@ -164,16 +150,10 @@ const Survey = () => {
           }
         })
       } else {
-        fetch('https://api-lita.ingello.com/v1/patient-test-answer/create', {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            ...currentAnswer,
-            test_answer_id: null,
-          })
-        })
+        post('patient-test-answer/create', {
+          ...currentAnswer,
+          test_answer_id: null,
+        });
       }
     }
     setIsLoading(false);

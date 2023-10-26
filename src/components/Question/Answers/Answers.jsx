@@ -89,8 +89,8 @@ const NumberPicker = ({ type, answers, startValue, setAnswer }) => {
   useEffect(() => setValue({ [type]: startValue }), [startValue, type, answers]);
 
   useEffect(() => {
-    setAnswer(answer => ({ ...answer, test_answer_text: value.count }))
-  }, [value])
+    setAnswer(answer => ({ ...answer, test_answer_text: String(value.count) }))
+  }, [setAnswer, value])
 
   const range = [];
 
@@ -131,7 +131,7 @@ const DatePicker = ({ setAnswer }) => {
     setAnswer(answer => ({
       ...answer,
       test_answer_text: `${value.day}.${value.month}.${value.year}`}));
-  }, [value])
+  }, [setAnswer, value])
 
   const years = useMemo(() => {
     const result = [];
@@ -286,7 +286,7 @@ const Checkboxes = ({ answers, setAnswer }) => {
     }
 
     setAnswer(answer => ({ ...answer, test_answer_id: resultArr }));
-  }, [values])
+  }, [setAnswer, values])
 
   const checkboxHandler = useCallback((e, index, arr) => {
     if (index === 0) {
@@ -301,7 +301,7 @@ const Checkboxes = ({ answers, setAnswer }) => {
       [e.target.value]: !current[e.target.value],
       [arr[0].id]: false
     }));
-  }, [])
+  }, [values])
 
   return (
     <ul className={cl.checkList} ref={list}>
@@ -334,13 +334,14 @@ const RadioButtons = ({ answers, setAnswer }) => {
 
   useEffect(() => {
     list.current.scrollTo(0, 0);
+    setSelectedValue(null);
   }, [answers])
 
   useEffect(() => {
     if (selectedValue) {
       setAnswer(answer => ({ ...answer, test_answer_id: [selectedValue] }))
     }
-  }, [selectedValue])
+  }, [selectedValue, setAnswer])
 
   return (
     <ul

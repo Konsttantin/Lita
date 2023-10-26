@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import cn from 'classnames';
 import Question from '../Question/Question';
 import cl from './Survey.module.css';
-import CategoryPicker from '../CategoryPicker/CategoryPicker';
 import { post } from '../../utils/api';
 
 const questionTypes = {
@@ -13,16 +12,13 @@ const questionTypes = {
   date: 'date'
 };
 
-const Survey = () => {
+const Survey = ({ requires, selectedCategory, onBackHome }) => {
   const [questionIndex, setQuestionIndex] = useState(null);
   const [showFinish, setShowFinish] = useState(false);
   const [isTestStarted, setIsTestStarted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [questions, setQuestions] = useState([]);
   const [optionalQuestions, setOptionalQuestions] = useState([]);
-  const [requires, setRequires] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
   const [currentAnswer, setCurrentAnswer] = useState({
     patient_test_id: null,
     test_question_id: null,
@@ -31,19 +27,6 @@ const Survey = () => {
   });
 
   const isAnswerEmpty = useMemo(() => !currentAnswer.test_answer_id.length && !currentAnswer.test_answer_text, [currentAnswer]);
-
-  useEffect(() => {
-    (async() => {
-      const categories = await fetch('https://api-lita.ingello.com/v1/test-category/index').then(resp => resp.json());
-      const requires = await fetch('https://api-lita.ingello.com/v1/test-question-requires/index').then(response => response.json());
-
-      setCategories(categories);
-      setRequires(requires);
-      setSelectedCategory(categories[0].id);
-      setIsLoading(false);
-    })()
-  }, []); // load test categories and requires
-
   const optionalIDs = useMemo(() => requires.map(req => req.test_question_id), [requires]);
   const requiresAnswers = useMemo(() => requires.map(req => req.test_answer_id), [requires])
 
@@ -51,8 +34,8 @@ const Survey = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`https://api-lita.ingello.com/v1/test-question/index?test_category_id=${category}&sort=order&-join=testQuestionInput`);
-      const answerResponse = await fetch(`https://api-lita.ingello.com/v1/test-answer/index`);
+      const response = await fetch(`https://api-lita.ingello.com/v1/test-question/index?test_category_id=${category}&sort=order&-join=testQuestionInput&-all=1`);
+      const answerResponse = await fetch(`https://api-lita.ingello.com/v1/test-answer/index?-all=1`);
 
       if (!response.ok) {
         throw new Error('Ошибка при получении вопросов');
@@ -98,13 +81,19 @@ const Survey = () => {
   const currentQuestion = useMemo(() => questions[questionIndex], [questionIndex, questions]);
 
   useEffect(() => {
+    setTestQuestions(selectedCategory)
+  }, [selectedCategory, setTestQuestions]) // get current category questions
+
+  useEffect(() => {
     setCurrentAnswer(answer => ({ ...answer, test_question_id: currentQuestion?.id || null }))
   }, [currentQuestion]); // update question_id in currentAnswer
 
   const createPatientTest = useCallback(async() => {
+    setIsLoading(true);
     const test = await post('patient-test/create', {patient_id: localStorage.getItem('userID')});
 
     setCurrentAnswer(answer => ({ ...answer, patient_test_id: test.id }));
+    setIsLoading(false);
   }, []); // create test session
 
   const sendTestAnswer = useCallback(async() => {
@@ -164,12 +153,12 @@ const Survey = () => {
       return;
     }
 
-    if (isTestStarted && questionIndex === null) {
-      createPatientTest();
-      return setQuestionIndex(0);
+    if (showFinish) {
+      return onBackHome();
     }
 
     if (questionIndex === questions.length - 1) {
+      await sendTestAnswer();
       setCurrentAnswer(answer => ({
         ...answer,
         test_answer_id: [],
@@ -198,30 +187,49 @@ const Survey = () => {
     }
 
     return setShowFinish(true);
-  }, [questionIndex, questions, isLoading, isTestStarted, createPatientTest, isAnswerEmpty, sendTestAnswer]);
+  }, [isLoading, showFinish, questionIndex, questions.length, onBackHome, isAnswerEmpty, sendTestAnswer]);
+
+  const backButtonHandler = useCallback(() => {
+    if (showFinish) {
+      return setShowFinish(false);
+    }
+
+    if (questionIndex === 0) {
+      setCurrentAnswer(answer => ({
+        ...answer,
+        test_question_id: null,
+        test_answer_id: [],
+        test_answer_text: ''
+      }));
+
+      return setIsTestStarted(false);
+    }
+
+    setCurrentAnswer(answer => ({
+      ...answer,
+      test_answer_id: [],
+      test_answer_text: ''
+    }));
+
+    return setQuestionIndex(i => i - 1 >= 0 ? i - 1 : null);
+  }, [questionIndex, showFinish]);
+
+  const startButtonHandler = useCallback(() => {
+    if (showFinish || isLoading) {
+      return;
+    }
+
+    setIsTestStarted(true);
+    createPatientTest();
+    setQuestionIndex(0);
+  }, [createPatientTest, isLoading, showFinish]);
 
   return (
     <div className={cl.survey}>
       {(showFinish || isTestStarted) && (
         <button
           className={cl.backArrow}
-          onClick={() => {
-            if (showFinish) {
-              return setShowFinish(false);
-            }
-
-            if (questionIndex === null) {
-              return setIsTestStarted(false);
-            }
-
-            setCurrentAnswer(answer => ({
-              ...answer,
-              test_answer_id: [],
-              test_answer_text: ''
-            }));
-
-            return setQuestionIndex(i => i - 1 >= 0 ? i - 1 : null);
-          }}
+          onClick={backButtonHandler}
         >
           <img
             src="svg/back-arrow.SVG"
@@ -238,13 +246,7 @@ const Survey = () => {
             </h1>
             <button
               className={cn(cl.startButton, { [cl.finished]: showFinish })}
-              onClick={() => {
-                if (showFinish || isLoading) {
-                  return;
-                }
-
-                setIsTestStarted(true);
-              }}
+              onClick={startButtonHandler}
             >
               {showFinish ? (
                 <img src="svg/lita-text-logo.SVG"/>
@@ -257,24 +259,13 @@ const Survey = () => {
             </button>
           </>
         ) : (
-          <>
-            {questionIndex === null ? (
-              <CategoryPicker
-                categories={categories}
-                selectedCategory={selectedCategory}
-                onCategoryChange={(value) => setSelectedCategory(value)}
-                fetchQuestions={setTestQuestions}
-              />
-            ) : (
-              <Question
-                header={currentQuestion.title}
-                type={currentQuestion.type}
-                answers={currentQuestion.answers}
-                tooltip={currentQuestion.tooltip}
-                setAnswer={setCurrentAnswer}
-              />
-            )}
-          </>
+          <Question
+            header={currentQuestion.title}
+            type={currentQuestion.type}
+            answers={currentQuestion.answers}
+            tooltip={currentQuestion.tooltip}
+            setAnswer={setCurrentAnswer}
+          />
         )}
       </div>
 

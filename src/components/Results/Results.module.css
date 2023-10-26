@@ -1,0 +1,79 @@
+.backButton {
+  display: flex;
+  justify-content: center;
+
+  padding: 10px 100px;
+  margin: 10px 0;
+  border-radius: 10px;
+
+  color: #000;
+  background-color: #FFF;
+  border: 1px solid #000;
+
+  font-size: 20px;
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-grow: 1;
+
+  width: 100%;
+
+  padding: 20px;
+  margin: 10px 0;
+
+  min-height: 0;
+  overflow-y: scroll;
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  width: 100%;
+  padding: 15px;
+
+  border-radius: 10px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+
+  background-color: #F6F6F6;
+}
+
+.itemContent {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.answerContent {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.itemTitle {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.itemDate {
+  font-size: 14px;
+}
+
+.emptyMessage {
+  font-family: 'SF Pro Rounded';
+  font-size: 30px;
+  text-align: center;
+
+  margin-top: 100px;
+}

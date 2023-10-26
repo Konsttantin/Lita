@@ -1,13 +1,8 @@
 import cn from 'classnames';
 
 import cl from './CategoryPicker.module.css';
-import { useEffect } from 'react';
 
-const CategoryPicker = ({ categories, selectedCategory, onCategoryChange, fetchQuestions }) => {
-  useEffect(() => {
-    fetchQuestions(selectedCategory)
-  }, [selectedCategory, fetchQuestions])
-
+const CategoryPicker = ({ categories, selectedCategory, onCategoryChange}) => {
   return (
     <div className={cl.picker}>
       <h1 className={cl.header}>Оберіть категорію тесту</h1>

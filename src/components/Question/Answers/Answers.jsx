@@ -288,24 +288,16 @@ const Checkboxes = ({ answers, setAnswer }) => {
     setAnswer(answer => ({ ...answer, test_answer_id: resultArr }));
   }, [setAnswer, values])
 
-  const checkboxHandler = useCallback((e, index, arr) => {
-    if (index === 0) {
-      return setValues(current => ({
-        ...values,
-        [e.target.value]: !current[e.target.value]
-      }));
-    }
-
+  const checkboxHandler = useCallback((e) => {
     setValues(current => ({
       ...current,
       [e.target.value]: !current[e.target.value],
-      [arr[0].id]: false
     }));
-  }, [values])
+  }, [])
 
   return (
     <ul className={cl.checkList} ref={list}>
-      {answers.options.map((el, index, answersArr) => (
+      {answers.options.map((el) => (
         <label
           key={el.value}
           htmlFor={el.value}
@@ -317,7 +309,7 @@ const Checkboxes = ({ answers, setAnswer }) => {
             id={el.value}
             className={cl.checkInput}
             checked={values[el.id]}
-            onChange={(e) => checkboxHandler(e, index, answersArr)}
+            onChange={(e) => checkboxHandler(e)}
           />
           <span className={cl.checkmark}></span>
           {el.title}

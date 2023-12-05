@@ -12,13 +12,13 @@
 
 .categories {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 15px;
 
   overflow-y: scroll;
 
   padding: 15px 5px;
-  margin-top: calc(var(--vh, 1vh) * 30 - 140px);
+  /* margin-top: calc(var(--vh, 1vh) * 30 - 140px); */
 
   width: 100%;
 
@@ -49,6 +49,10 @@
     align-items: center;
 
     width: 100%;
+
+    img {
+      margin-left: 5px;
+    }
   }
 
   .itemLogo {
@@ -74,10 +78,17 @@
 
   width: 100%;
   padding: 20px 15px;
-  margin-top: 10px;
 
   border-radius: 12px;
 
   background-color: #CDFFBB;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+
+  font-weight: bold;
+}
+
+.description {
+  margin-top: 10px;
+
+  font-size: 16px;
 }

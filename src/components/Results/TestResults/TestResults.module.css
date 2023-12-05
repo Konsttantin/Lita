@@ -1,0 +1,99 @@
+.resultsContainer {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+  width: 100%;
+
+  padding: 20px;
+  margin: 10px 0;
+
+  min-height: 0;
+  overflow-y: scroll;
+}
+
+.riskMessage {
+  background-color: #f4b250;
+
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+
+  &.highRisk {
+    background-color: #f76a51;
+  }
+}
+
+.lastWord {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+}
+
+.additionalInfo {
+  display: flex;
+  flex-direction: column;
+
+  padding: 30px 0;
+
+  .infoTitle {
+    align-self: center;
+    margin-bottom: 10px;
+  
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  li {
+    font-weight: bold;
+
+    margin-bottom: 5px;
+  }
+}
+
+.buyButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  padding: 20px 15px;
+
+  border-radius: 12px;
+
+  color: #000;
+  background-color: #CDFFBB;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+
+  font-weight: bold;
+
+  img {
+    margin-left: 10px;
+  }
+}
+
+.loadInfoButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  padding: 20px 15px;
+  margin-top: 10px;
+
+  border-radius: 12px;
+
+  color: #000;
+  background-color: #F6F6F6;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+
+  font-weight: bold;
+
+  img {
+    margin-left: 10px;
+  }
+}
+
+.buttonDescription {
+  margin-top: 10px;
+}

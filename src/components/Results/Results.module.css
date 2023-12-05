@@ -28,13 +28,6 @@
   overflow-y: scroll;
 }
 
-.loader {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
-}
-
 .item {
   display: flex;
   justify-content: space-between;

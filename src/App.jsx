@@ -2,28 +2,45 @@ import { useEffect, useState } from 'react';
 import './App.css'
 import Navigation from './components/Navigation/Navigation';
 import Survey from './components/Survey/Survey';
-import { post } from './utils/api';
+import { get, post } from './utils/api';
 import HomePage from './components/HomePage/HomePage';
 import Results from './components/Results/Results';
+import Modal from './components/Modal/Modal';
 
 function App() {
   // const [isLoading, setIsLoading] = useState(true);
+  const [allContext, setAllContext] = useState([]);
   const [requires, setRequires] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedTestCategory, setSelectedTestCategory] = useState(null);
   const [showResults, setShowResults] = useState(false);
   const [navigationState, setNavigationState] = useState('Home');
+  const [showModal, setShowModal] = useState(false);
+
+  const backHomeHandler = () => {
+    setNavigationState('Home');
+    setSelectedTestCategory(null);
+  };
+
+  const closeModalHandler = () => {
+    backHomeHandler();
+    setShowModal(false);
+  }
 
   useEffect(() => {
     (async() => {
-      const categories = await fetch('https://api-lita.ingello.com/v1/test-category/index?-all=1').then(resp => resp.json());
-      const requires = await fetch('https://api-lita.ingello.com/v1/test-question-requires/index?-all=1').then(resp => resp.json());
+      let categories = await get('test-category/index?-all=1');
+      const requires = await get('test-question-requires/index?-all=1');
+      const allContext = await get('test-answer-context/index?-all=1');
+
+      categories = categories.filter(category => category.is_disabled !== 1);
 
       setCategories(categories);
       setRequires(requires);
+      setAllContext(allContext);
       // setIsLoading(false);
     })()
-  }, []); // load test categories and requires
+  }, []); // load test categories, requires and context
 
   useEffect(() => {
     const localUser = localStorage.getItem('userID');
@@ -50,6 +67,13 @@ function App() {
 
   return (
     <div className="container">
+      {showModal && (
+        <Modal
+          message={'Вибачте, 1 версія тесту в доступі тільки для жінок'}
+          onClose={closeModalHandler}
+        />
+      )}
+
       {navigationState === 'Home' && (
         <HomePage
           categories={categories}
@@ -67,11 +91,10 @@ function App() {
       {selectedTestCategory && (
         <Survey
           requires={requires}
+          allContext={allContext}
           selectedCategory={selectedTestCategory}
-          onBackHome={() => {
-            setNavigationState('Home');
-            setSelectedTestCategory(null);
-          }}
+          onBackHome={backHomeHandler}
+          onShowModal={setShowModal}
         />
       )}
 

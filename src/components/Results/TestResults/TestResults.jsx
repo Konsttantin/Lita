@@ -1,3 +1,4 @@
+import ContactsBox from '../../ContactsBox/ContactsBox';
 import TipButton from '../../TipButton/TipButton';
 import cl from './TestResults.module.css';
 import cn from 'classnames';
@@ -66,6 +67,8 @@ const TestResults = ({ isRiskHigh }) => {
       <p className={cl.buttonDescription}>
         В подальшому додаток автоматично аналізуватиме та безкоштовно виводитиме індивідуальні плани профілактики, але лише завдяки вашій підтримці ми зможемо завершити розробку швидко.
       </p>
+
+      <ContactsBox />
     </div>
   );
 };

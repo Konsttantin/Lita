@@ -1,0 +1,47 @@
+.contacts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  width: 100%;
+  padding: 15px;
+  text-align: center;
+  border-radius: 12px;
+
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+
+  background-color: var(--main-yellow);
+
+  span {
+    margin-bottom: 5px;
+  }
+}
+
+.contractOffer {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+
+  text-align: center;
+  text-decoration: underline;
+
+  font-size: 16px;
+  font-weight: bold;
+  color: #000;
+
+  img {
+    width: 20px;
+  }
+}
+
+.billingIcons {
+  display: flex;
+  gap: 5px;
+
+  margin-top: 5px;
+
+  img {
+    width: 40px;
+  }
+}

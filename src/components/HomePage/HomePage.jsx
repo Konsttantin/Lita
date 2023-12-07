@@ -3,6 +3,7 @@ import AppHeader from '../AppHeader/AppHeader';
 import cl from './HomePage.module.css';
 import { get } from '../../utils/api';
 import Loader from '../Loader/Loader';
+import ContactsBox from '../ContactsBox/ContactsBox';
 
 const HomePage = ({ categories, onCategoryChange, onResults }) => {
   const [hasPassedTests, setHasPassedTests] = useState(false);
@@ -60,9 +61,9 @@ const HomePage = ({ categories, onCategoryChange, onResults }) => {
                 <br />
                 Щоб отримати оцінку власного ризику раку та персоналізований план дій та поради щодо профілактики раку переходьте до першого опитування.
               </p>
-            </ul>
 
-            
+              <ContactsBox />
+            </ul>
           </>
         )}
       </main>

@@ -1,11 +1,15 @@
+import { useState } from 'react';
 import ContactsBox from '../../ContactsBox/ContactsBox';
 import TipButton from '../../TipButton/TipButton';
 import cl from './TestResults.module.css';
 import cn from 'classnames';
+import BuyModal from '../../BuyModal/BuyModal';
 
 const TestResults = ({ isRiskHigh }) => {
+  const [showBuyModal, setShowBuyModal] = useState(false);
+
   const tooltip = 'Памʼятайте! Ризик розвитку раку не означає, що він у Вас точно виникне. Проте, якщо це все ж станеться, скринінг націлений на його раннє виявлення. Це полегшить лікування і знизить ризик смерті для Вас. Висновок не є остаточним діагнозом і потребує очної консультації з лікарем.';
-  
+
   return (
     // <ul className={cl.results}>
     //   {answers.map(answer => (
@@ -44,15 +48,21 @@ const TestResults = ({ isRiskHigh }) => {
         </ul>
       </div>
 
-      <a
+      <button
         className={cl.buyButton}
-        href="https://pay.fondy.eu/s/JKQXLmeBiZGbtG"
-        target="_blank"
-        rel="noreferrer"
+        // href="https://pay.fondy.eu/s/JKQXLmeBiZGbtG"
+        onClick={() => setShowBuyModal(true)}
       >
         {'Отримати профілактичний план від лікаря за 53 грн'}
         <img src="svg/category-arrow.SVG" alt="arrow" />
-      </a>
+      </button>
+
+      {showBuyModal && (
+        <BuyModal
+          onClose={() => setShowBuyModal(false)}
+          onAgree={() => window.open('https://pay.fondy.eu/s/JKQXLmeBiZGbtG', '_blank')}
+        />
+      )}
 
       <a
         className={cl.loadInfoButton}

@@ -7,14 +7,17 @@ const ContactsBox = () => {
         Адреса: м.Бориспіль, Україна
       </span>
       <span>
+        Контактний номер телефону: <a href="tel:+380937619712">+380937619712</a>
+      </span>
+      <span>
         З будь-яких питань: <a href="mailto:longilita@gmail.com">longilita@gmail.com</a>
       </span>
       <span>
-        Офіційний сайт: <a href="https://litaapp.co">litaapp.co</a>
+        Про нас: <a href="https://litaapp.co">litaapp.co</a>
       </span>
       <a
         className={cl.contractOffer}
-        href="https://drive.google.com/file/d/1Pqtq5Lct4CmJxstwo-abcKMgXyAfHpmf/view?usp=sharing"
+        href="https://drive.google.com/file/d/1pMbivt5QENn07Kzag_GuHXEqWtjxOXvg/view?usp=sharing"
         target="_blank"
         rel="noreferrer"
       >

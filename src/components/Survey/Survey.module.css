@@ -182,8 +182,11 @@
 
   line-height: 22px;
 
+  transition: all .2s ease;
+
   &.active {
-    background-color: #49E346;
+    background-color: var(--main-green);
+    color: #000;
   }
 
   img {

@@ -27,7 +27,7 @@ const BuyModal = ({ onClose, onAgree }) => {
           <span className={cl.checkmark}></span>
           {'Згоден з договором'}
           <a
-            href="https://drive.google.com/file/d/1Pqtq5Lct4CmJxstwo-abcKMgXyAfHpmf/view?usp=sharing"
+            href="https://drive.google.com/file/d/1pMbivt5QENn07Kzag_GuHXEqWtjxOXvg/view?usp=sharing"
             target="_blank"
             rel="noreferrer"
           >

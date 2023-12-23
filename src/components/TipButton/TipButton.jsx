@@ -12,10 +12,15 @@ const TipButton = ({ tooltip }) => {
   useEffect(() => {
     tip.current.style.transform = 'none';
 
-    const tipOffset = window.screen.width - tip.current.getBoundingClientRect().right;
+    const rightShift = window.screen.width - tip.current.getBoundingClientRect().right;
+    const leftShift = tip.current.getBoundingClientRect().right - tip.current.offsetWidth;
 
-    if (tipOffset < 0) {
-      tip.current.style.transform = `translateX(${tipOffset - 7}px)`;
+    if (rightShift < 0) {
+      tip.current.style.transform = `translateX(${rightShift - 7}px)`;
+    }
+
+    if (leftShift < 0) {
+      tip.current.style.transform = `translateX(${-leftShift + 7}px)`;
     }
 
     const hideTipHandler = (event) => {

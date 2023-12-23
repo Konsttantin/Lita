@@ -8,7 +8,8 @@ import BuyModal from '../../BuyModal/BuyModal';
 const TestResults = ({ isRiskHigh }) => {
   const [showBuyModal, setShowBuyModal] = useState(false);
 
-  const tooltip = 'Памʼятайте! Ризик розвитку раку не означає, що він у Вас точно виникне. Проте, якщо це все ж станеться, скринінг націлений на його раннє виявлення. Це полегшить лікування і знизить ризик смерті для Вас. Висновок не є остаточним діагнозом і потребує очної консультації з лікарем.';
+  const tooltip = 'Памʼятайте! Ризик розвитку раку не означає, що він у Вас точно виникне.';
+  const paymentLink = 'https://www.liqpay.ua/api/3/checkout?data=eyJ2ZXJzaW9uIjozLCJhY3Rpb24iOiJwYXkiLCJhbW91bnQiOiI1MyIsImN1cnJlbmN5IjoiVUFIIiwiZGVzY3JpcHRpb24iOiLQhtC90LTQuNCy0ZbQtNGD0LDQu9GM0L3QuNC5INC/0YDQvtGE0ZbQu9Cw0LrRgtC40YfQvdC40Lkg0LrQsNC70LXQvdC00LDRgCIsInB1YmxpY19rZXkiOiJzYW5kYm94X2k2NjMwNjk4MzA4MyIsImxhbmd1YWdlIjoidWsifQ==&signature=ghPcWu1qUuw1MF7GumiLyWuyON0=';
 
   return (
     // <ul className={cl.results}>
@@ -28,15 +29,19 @@ const TestResults = ({ isRiskHigh }) => {
     // </ul>
     <div className={cl.resultsContainer}>
       <div className={cn(cl.riskMessage, {[cl.highRisk] : isRiskHigh})}>
-        {isRiskHigh ? 'Ви маєте підвищений ризик розвитку раку. ' : 'Ви маєте середньостатистичний ризик розвитку раку. '}
-        {'Ви можете отримати готовий профілактичний план з оцінкою ризиків та рекомендаціями стосовно попередження від наших лікарів за символічну вартість чашки кави. Або ж можете самостійно проаналізувати свої відповіді та скористатись джерелами для аналізу та отримання рекомендацій, які знайдете за '}
+        {isRiskHigh ? 'Ви маєте підвищений ризик розвитку раку. Саме тому вам слід ' : 'Ви маєте середньостатистичний ризик розвитку раку. Тому, за бажанням, ви можете '}
+        {'дізнатись про методи скринінгу, які націлені на його раннє виявлення, що полегшить лікування і знизить ризик для '}
 
         <span className={cl.lastWord}>
-          посиланням.
+          вас.
 
           <TipButton tooltip={tooltip} />
         </span>
       </div>
+
+      <p className={cl.description}>
+        Ви можете отримати готовий профілактичний план з оцінкою ризиків та рекомендаціями стосовно попередження від наших лікарів за символічну вартість чашки кави. Або ж можете самостійно проаналізувати свої відповіді та скористатись джерелами для аналізу та отримання рекомендацій.
+      </p>
 
       <div className={cl.additionalInfo}>
         <span className={cl.infoTitle}>Ризики, які ми оцінюємо:</span>
@@ -60,23 +65,23 @@ const TestResults = ({ isRiskHigh }) => {
       {showBuyModal && (
         <BuyModal
           onClose={() => setShowBuyModal(false)}
-          onAgree={() => window.open('https://pay.fondy.eu/s/JKQXLmeBiZGbtG', '_blank')}
+          onAgree={() => window.open(paymentLink, '_blank')}
         />
       )}
 
+      <p className={cl.description}>
+        Послуга включає аналіз лікарем ваших відповідей та персоналізований список з оцінкою ризику виникнення 4-х видів раку згідно з міжнародними профілактичними протоколами від The American College of Obstetricians and Gynecologists, National Cancer Institute, The American Cancer Society, Centers for Disease Control and Prevention, European Society For Medical Oncology, United States Preventive Services Task Force. А також список методів діагностики з детальним описом чому такий ризик є та списком лікарів, до яких треба звернутись. Ви отримаєте їх в форматі PDF, протягом 3-х днів - на пошту, яку вкажете на сторінці платіжної системи. Якщо вас не влаштує надана послуга - ми повернемо вам кошти, згідно Договору-Оферти.
+      </p>
+
       <a
         className={cl.loadInfoButton}
-        href="https://drive.google.com/file/d/1eQ46k5Mv_VIpNFtkU-4T2gjCYbR6wv-E/view?usp=sharing"
+        href="https://drive.google.com/file/d/1f46gIaOsy4JtshATNBAx8NmRiNJtPwwh/view?usp=sharing"
         target="_blank"
         rel="noreferrer"
       >
         {'Джерела для самостійної оцінки відповідей'}
         <img src="svg/category-arrow.SVG" alt="arrow" />
       </a>
-
-      <p className={cl.buttonDescription}>
-        В подальшому додаток автоматично аналізуватиме та безкоштовно виводитиме індивідуальні плани профілактики, але лише завдяки вашій підтримці ми зможемо завершити розробку швидко.
-      </p>
 
       <ContactsBox />
     </div>

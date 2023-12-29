@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import './App.css'
 import Navigation from './components/Navigation/Navigation';
 import Survey from './components/Survey/Survey';
@@ -6,6 +6,8 @@ import { get, post } from './utils/api';
 import HomePage from './components/HomePage/HomePage';
 import Results from './components/Results/Results';
 import Modal from './components/Modal/Modal';
+import OfferPage from './components/OfferPage/OfferPage';
+import { OfferPageContext } from './context/OfferPageContext';
 
 function App() {
   // const [isLoading, setIsLoading] = useState(true);
@@ -17,6 +19,8 @@ function App() {
   const [navigationState, setNavigationState] = useState('Home');
   const [showModal, setShowModal] = useState(false);
 
+  const { showOfferPage, setShowOfferPage } = useContext(OfferPageContext);
+
   const backHomeHandler = () => {
     setNavigationState('Home');
     setSelectedTestCategory(null);
@@ -25,6 +29,10 @@ function App() {
   const closeModalHandler = () => {
     backHomeHandler();
     setShowModal(false);
+  }
+
+  const closeOfferPage = () => {
+    setShowOfferPage(false);
   }
 
   useEffect(() => {
@@ -74,6 +82,10 @@ function App() {
         />
       )}
 
+      {showOfferPage && (
+        <OfferPage onClose={closeOfferPage} />
+      )}
+
       {navigationState === 'Home' && (
         <HomePage
           categories={categories}
@@ -110,6 +122,8 @@ function App() {
           setNavigationState(value);
           setSelectedTestCategory(null);
           setShowResults(false);
+          closeOfferPage();
+          console.log('DOMIK!!!');
         }}
       />
     </div>

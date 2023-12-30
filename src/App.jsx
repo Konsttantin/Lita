@@ -6,8 +6,10 @@ import { get, post } from './utils/api';
 import HomePage from './components/HomePage/HomePage';
 import Results from './components/Results/Results';
 import Modal from './components/Modal/Modal';
-import OfferPage from './components/OfferPage/OfferPage';
+import OfferPage from './components/ModulePages/OfferPage';
 import { OfferPageContext } from './context/OfferPageContext';
+import { RecommendationsContext } from './context/RecommendationsContext';
+import RecommendationsPage from './components/ModulePages/RecommendationsPage';
 
 function App() {
   // const [isLoading, setIsLoading] = useState(true);
@@ -20,6 +22,7 @@ function App() {
   const [showModal, setShowModal] = useState(false);
 
   const { showOfferPage, setShowOfferPage } = useContext(OfferPageContext);
+  const { showRecs, setShowRecs } = useContext(RecommendationsContext);
 
   const backHomeHandler = () => {
     setNavigationState('Home');
@@ -29,11 +32,15 @@ function App() {
   const closeModalHandler = () => {
     backHomeHandler();
     setShowModal(false);
-  }
+  };
 
   const closeOfferPage = () => {
     setShowOfferPage(false);
-  }
+  };
+
+  const closeRecs = () => {
+    setShowRecs(false);
+  };
 
   useEffect(() => {
     (async() => {
@@ -84,6 +91,10 @@ function App() {
 
       {showOfferPage && (
         <OfferPage onClose={closeOfferPage} />
+      )}
+
+      {showRecs && (
+        <RecommendationsPage onClose={closeRecs} />
       )}
 
       {navigationState === 'Home' && (

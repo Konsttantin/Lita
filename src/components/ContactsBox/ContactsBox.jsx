@@ -8,7 +8,7 @@ const ContactsBox = () => {
   return (
     <div className={cl.contacts}>
       <span>
-        Адреса: м.Бориспіль, Україна
+        Адреса: Київська область, Бориспільський район, місто Бориспіль, провулок Новий, будинок 1а, квартира 20
       </span>
       <span>
         Контактний номер телефону: <a href="tel:+380937619712">+380937619712</a>
@@ -17,7 +17,7 @@ const ContactsBox = () => {
         З будь-яких питань: <a href="mailto:longilita@gmail.com">longilita@gmail.com</a>
       </span>
       <span>
-        Про нас: <a href="https://litaapp.co">litaapp.co</a>
+        Про нас: <a href="https://litaapp.co" target="_blank" rel="noreferrer">litaapp.co</a>
       </span>
       <button
         className={cl.contractOffer}

@@ -1,11 +1,12 @@
-import cl from './OfferPage.module.css';
+import cl from './ModulePages.module.css';
 
 const OfferPage = ({ onClose }) => {
   return (
-    <div className={cl.offerPage}>
-      <div className={cl.offerContent}>
+    <div className={cl.page}>
+      <div className={cl.content}>
         <h1 className={cl.header}>
-          ПУБЛІЧНИЙ ДОГОВІР (ОФЕРТА) <br /> на надання інформаційно-консультаційних послуг
+          ПУБЛІЧНИЙ ДОГОВІР (ОФЕРТА)<br />
+          на надання інформаційно-консультаційних послуг
         </h1>
 
         <p className={cl.paragraph}>

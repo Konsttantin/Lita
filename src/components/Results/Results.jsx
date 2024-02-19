@@ -36,9 +36,6 @@ const Results = ({ categories }) => {
       const allAnswers = await get('test-answer/index?-all=1');
 
       const allImportantAnswersID = allAnswers.filter(el => el.is_disabled === 1).map(el => el.id);
-      console.log(allAnswers);
-
-      console.log(allImportantAnswersID)
 
       if (!allUserTests) {
         setIsLoading(false);
@@ -68,8 +65,6 @@ const Results = ({ categories }) => {
         if (!questionFromTest) {
           return;
         }
-
-        console.log(currentTestAnswers, allImportantAnswersID);
 
         const testObj = {
           id: test.id,

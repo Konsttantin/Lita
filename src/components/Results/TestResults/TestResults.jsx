@@ -1,12 +1,15 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import cn from 'classnames';
+import cl from './TestResults.module.css';
+
 import ContactsBox from '../../ContactsBox/ContactsBox';
 import TipButton from '../../TipButton/TipButton';
-import cl from './TestResults.module.css';
-import cn from 'classnames';
 import BuyModal from '../../BuyModal/BuyModal';
+import { RecommendationsContext } from '../../../context/RecommendationsContext';
 
 const TestResults = ({ isRiskHigh }) => {
   const [showBuyModal, setShowBuyModal] = useState(false);
+  const { setShowRecs } = useContext(RecommendationsContext);
 
   const tooltip = 'Памʼятайте! Ризик розвитку раку не означає, що він у Вас точно виникне.';
   const paymentLink = 'https://www.liqpay.ua/api/3/checkout?data=eyJ2ZXJzaW9uIjozLCJhY3Rpb24iOiJwYXkiLCJhbW91bnQiOiI1MyIsImN1cnJlbmN5IjoiVUFIIiwiZGVzY3JpcHRpb24iOiLQhtC90LTQuNCy0ZbQtNGD0LDQu9GM0L3QuNC5INC/0YDQvtGE0ZbQu9Cw0LrRgtC40YfQvdC40Lkg0LrQsNC70LXQvdC00LDRgCIsInB1YmxpY19rZXkiOiJzYW5kYm94X2k2NjMwNjk4MzA4MyIsImxhbmd1YWdlIjoidWsifQ==&signature=ghPcWu1qUuw1MF7GumiLyWuyON0=';
@@ -73,15 +76,13 @@ const TestResults = ({ isRiskHigh }) => {
         Послуга включає аналіз лікарем ваших відповідей та персоналізований список з оцінкою ризику виникнення 4-х видів раку згідно з міжнародними профілактичними протоколами від The American College of Obstetricians and Gynecologists, National Cancer Institute, The American Cancer Society, Centers for Disease Control and Prevention, European Society For Medical Oncology, United States Preventive Services Task Force. А також список методів діагностики з детальним описом чому такий ризик є та списком лікарів, до яких треба звернутись. Ви отримаєте їх в форматі PDF, протягом 3-х днів - на пошту, яку вкажете на сторінці платіжної системи. Якщо вас не влаштує надана послуга - ми повернемо вам кошти, згідно Договору-Оферти.
       </p>
 
-      <a
+      <button
         className={cl.loadInfoButton}
-        href="https://drive.google.com/file/d/1f46gIaOsy4JtshATNBAx8NmRiNJtPwwh/view?usp=sharing"
-        target="_blank"
-        rel="noreferrer"
+        onClick={() => setShowRecs(true)}
       >
         {'Джерела для самостійної оцінки відповідей'}
         <img src="svg/category-arrow.SVG" alt="arrow" />
-      </a>
+      </button>
 
       <ContactsBox />
     </div>

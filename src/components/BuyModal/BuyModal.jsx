@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import cn from 'classnames';
 
 import cl from './buyModal.module.css';
+import { OfferPageContext } from '../../context/OfferPageContext';
 
 const BuyModal = ({ onClose, onAgree }) => {
   const [isAgree, setIsAgree] = useState(false);
+  const { setShowOfferPage } = useContext(OfferPageContext)
+
 
   return (
     <div className={cl.buyModal}>
@@ -26,13 +29,12 @@ const BuyModal = ({ onClose, onAgree }) => {
           />
           <span className={cl.checkmark}></span>
           {'Згоден з договором'}
-          <a
-            href="https://drive.google.com/file/d/1pMbivt5QENn07Kzag_GuHXEqWtjxOXvg/view?usp=sharing"
-            target="_blank"
-            rel="noreferrer"
+          <button
+            onClick={() => setShowOfferPage(true)}
+            className={cl.offerButton}
           >
             &nbsp;оферти
-          </a>
+          </button>
         </label>
 
         <button

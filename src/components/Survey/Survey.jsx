@@ -142,7 +142,7 @@ const Survey = ({
   const sendTestAnswer = useCallback(async() => {
     setIsLoading(true);
 
-    const existingAnswer = await get(`patient-test-answer/index?patient_test_id=${currentAnswer.patient_test_id}&test_question_id=${currentAnswer.test_question_id}`);
+    // const existingAnswer = await get(`patient-test-answer/index?patient_test_id=${currentAnswer.patient_test_id}&test_question_id=${currentAnswer.test_question_id}`);
 
     const addNextQuestion = (nextQuestion) => {
       setQuestions(current => {
@@ -168,7 +168,7 @@ const Survey = ({
       });
     };
 
-    if (!existingAnswer) {
+    // if (!existingAnswer) {
       setSavedAnswers(answers => [...answers, ...currentAnswer.test_answer_id]);
 
       if (currentAnswer.test_answer_id.length) {
@@ -219,7 +219,7 @@ const Survey = ({
           test_answer_id: null,
         }]);
       }
-    }
+    // }
     setIsLoading(false);
   }, [currentAnswer, optionalIDs, questions, questionIndex, allAnswers, contextAnswers, requiresAnswers, allContext, userAnswers, optionalQuestions, requires]);
 

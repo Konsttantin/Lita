@@ -1,10 +1,14 @@
+import { useContext } from 'react';
 import cl from './ContactsBox.module.css';
+import { OfferPageContext } from '../../context/OfferPageContext';
 
 const ContactsBox = () => {
+  const { setShowOfferPage } = useContext(OfferPageContext)
+
   return (
     <div className={cl.contacts}>
       <span>
-        Адреса: м.Бориспіль, Україна
+        Адреса: Київська область, Бориспільський район, місто Бориспіль, провулок Новий, будинок 1а, квартира 20
       </span>
       <span>
         Контактний номер телефону: <a href="tel:+380937619712">+380937619712</a>
@@ -13,20 +17,19 @@ const ContactsBox = () => {
         З будь-яких питань: <a href="mailto:longilita@gmail.com">longilita@gmail.com</a>
       </span>
       <span>
-        Про нас: <a href="https://litaapp.co">litaapp.co</a>
+        Про нас: <a href="https://litaapp.co" target="_blank" rel="noreferrer">litaapp.co</a>
       </span>
-      <a
+      <button
         className={cl.contractOffer}
-        href="https://drive.google.com/file/d/1pMbivt5QENn07Kzag_GuHXEqWtjxOXvg/view?usp=sharing"
-        target="_blank"
-        rel="noreferrer"
+        onClick={() => setShowOfferPage(true)}
+        // href="https://drive.google.com/file/d/1pMbivt5QENn07Kzag_GuHXEqWtjxOXvg/view?usp=sharing"
       >
         Договір оферти
         <img
           src="svg/download-file.SVG"
           alt="Back"
         />
-      </a>
+      </button>
       <div className={cl.billingIcons}>
         <img src="svg/mastercard.SVG" alt="mastercard" />
         <img src="svg/visa.SVG" alt="visa" />

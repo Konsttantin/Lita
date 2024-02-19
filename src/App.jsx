@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import './App.css'
 import Navigation from './components/Navigation/Navigation';
 import Survey from './components/Survey/Survey';
@@ -6,6 +6,10 @@ import { get, post } from './utils/api';
 import HomePage from './components/HomePage/HomePage';
 import Results from './components/Results/Results';
 import Modal from './components/Modal/Modal';
+import OfferPage from './components/ModulePages/OfferPage';
+import { OfferPageContext } from './context/OfferPageContext';
+import { RecommendationsContext } from './context/RecommendationsContext';
+import RecommendationsPage from './components/ModulePages/RecommendationsPage';
 
 function App() {
   // const [isLoading, setIsLoading] = useState(true);
@@ -17,6 +21,9 @@ function App() {
   const [navigationState, setNavigationState] = useState('Home');
   const [showModal, setShowModal] = useState(false);
 
+  const { showOfferPage, setShowOfferPage } = useContext(OfferPageContext);
+  const { showRecs, setShowRecs } = useContext(RecommendationsContext);
+
   const backHomeHandler = () => {
     setNavigationState('Home');
     setSelectedTestCategory(null);
@@ -25,7 +32,15 @@ function App() {
   const closeModalHandler = () => {
     backHomeHandler();
     setShowModal(false);
-  }
+  };
+
+  const closeOfferPage = () => {
+    setShowOfferPage(false);
+  };
+
+  const closeRecs = () => {
+    setShowRecs(false);
+  };
 
   useEffect(() => {
     (async() => {
@@ -74,6 +89,14 @@ function App() {
         />
       )}
 
+      {showOfferPage && (
+        <OfferPage onClose={closeOfferPage} />
+      )}
+
+      {showRecs && (
+        <RecommendationsPage onClose={closeRecs} />
+      )}
+
       {navigationState === 'Home' && (
         <HomePage
           categories={categories}
@@ -110,6 +133,8 @@ function App() {
           setNavigationState(value);
           setSelectedTestCategory(null);
           setShowResults(false);
+          closeOfferPage();
+          console.log('DOMIK!!!');
         }}
       />
     </div>
